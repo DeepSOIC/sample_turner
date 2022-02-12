@@ -2,6 +2,7 @@
 #define PIN_DIR 8
 #define PIN_SLP 7
 #define PIN_MODESEL 6
+#define PIN_LED 13
 
 #include <math.h>
 
@@ -119,12 +120,15 @@ class PositionKnobMode: public OperationMode
         if (fabs(fdiff) > 0.9){
             digitalWrite(PIN_DIR, diff > 0 ? LOW : HIGH);
             
+            digitalWrite(PIN_LED, HIGH);
             for(int i = 0; i < abs(diff); ++i){
                 delayMicroseconds(30);
                 digitalWrite(PIN_STEP, HIGH);
                 delayMicroseconds(10);
                 digitalWrite(PIN_STEP, LOW);
             }
+            delayMicroseconds(300);
+            digitalWrite(PIN_LED, LOW);
             lastPotPos += diff*divratio;
         } 
     };
@@ -148,8 +152,9 @@ void setup() {
   pinMode(PIN_SLP, OUTPUT);
   
   pinMode(PIN_MODESEL, INPUT_PULLUP);
-  delay(1);
-
+  pinMode(PIN_LED, OUTPUT);
+  
+  delayMicroseconds(10);//wait for mode pin to get pulled up, if it's open
 }
 
 void loop() {
